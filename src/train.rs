@@ -12,11 +12,6 @@ use std::path::Path;
 
 type Tensor = ag::Tensor<f32>;
 
-// This is a toy convolutional network for MNIST.
-// Got 0.985 test accuracy in 300 sec on 2.7GHz Intel Core i5.
-//
-// First, run "./download_mnist.sh" beforehand if you don't have dataset and then run
-// "cargo run --example cnn_mnist --release" in `examples` directory.
 macro_rules! timeit {
     ($x:expr) => {{
         let start = Instant::now();
@@ -70,7 +65,7 @@ impl Parameters {
 }
 
 fn main() {
-    let ((x_train, y_train), (x_test, y_test)) = dataset::load();
+    let (x_train, y_train) = dataset::load();
 
     let ref w1 = ag::variable(ag::ndarray_ext::random_normal(&[32, 1, 3, 3], 0., 0.1));
     let ref w2 = ag::variable(ag::ndarray_ext::random_normal(&[64, 32, 3, 3], 0., 0.1));
@@ -126,7 +121,7 @@ fn main() {
         b2: b2.get_persistent_array().unwrap().to_owned(), 
         b3: b3.get_persistent_array().unwrap().to_owned(), 
     };
-    let parameters_json = parameters.as_json();
+    let parameters_json = parameters.as_json()+"\n";
 
     let path = Path::new("model.json");
     let display = path.display();
@@ -156,24 +151,18 @@ pub mod dataset {
     /// load mnist dataset as "ndarray" objects.
     ///
     /// labels are sparse (vertical vector).
-    pub fn load() -> ((NdArray, NdArray), (NdArray, NdArray)) {
+    pub fn load() -> (NdArray, NdArray) {
         // load dataset as `Vec`s
         let (train_x, num_image_train): (Vec<f32>, usize) =
             load_images("data/mnist/train-images-idx3-ubyte");
         let (train_y, num_label_train): (Vec<f32>, usize) =
             load_labels("data/mnist/train-labels-idx1-ubyte");
-        let (test_x, num_image_test): (Vec<f32>, usize) =
-            load_images("data/mnist/t10k-images-idx3-ubyte");
-        let (test_y, num_label_test): (Vec<f32>, usize) =
-            load_labels("data/mnist/t10k-labels-idx1-ubyte");
 
         // Vec to ndarray
         let as_arr = NdArray::from_shape_vec;
         let x_train = as_arr(ndarray::IxDyn(&[num_image_train, 1, 28, 28]), train_x).unwrap();
         let y_train = as_arr(ndarray::IxDyn(&[num_label_train, 1]), train_y).unwrap();
-        let x_test = as_arr(ndarray::IxDyn(&[num_image_test, 1, 28, 28]), test_x).unwrap();
-        let y_test = as_arr(ndarray::IxDyn(&[num_label_test, 1]), test_y).unwrap();
-        ((x_train, y_train), (x_test, y_test))
+        (x_train, y_train)
     }
 
     fn load_images<P: AsRef<Path>>(path: P) -> (Vec<f32>, usize) {
