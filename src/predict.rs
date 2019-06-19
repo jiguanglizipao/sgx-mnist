@@ -1,5 +1,4 @@
 extern crate autograd as ag;
-#[macro_use(s)]
 extern crate ndarray;
 extern crate serde;
 extern crate serde_json;
@@ -43,11 +42,6 @@ struct Parameters {
 }
 
 impl Parameters {
-    fn as_json(&self)-> String
-    {
-        return serde_json::to_string(&self).unwrap()
-    }
-
     fn from_json(s: &str)-> Self
     {
         return serde_json::from_str(s).unwrap()
@@ -57,7 +51,6 @@ impl Parameters {
 fn main() {
     let key = hex!("000102030405060708090a0b0c0d0e0f");
     let iv = hex!("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff");
-    let test_num = 1000;
 
     // -- load --
     let stdin = io::stdin();
@@ -80,8 +73,6 @@ fn main() {
     let ref b1 = ag::variable(parameters.b1);
     let ref b2 = ag::variable(parameters.b2);
     let ref b3 = ag::variable(parameters.b3);
-    let params = &[w1, w2, w3, b1, b2, b3];
-    let ref params_adam = ag::gradient_descent_ops::Adam::vars_with_states(params);
     let x = inputs();
     let z1 = conv_pool(&x, w1, b1); // map to 32 channel
     let z2 = conv_pool(&z1, w2, b2); // map to 64 channel

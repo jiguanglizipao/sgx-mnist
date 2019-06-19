@@ -9,7 +9,6 @@ extern crate bincode;
 extern crate aes;
 extern crate block_modes;
 
-use std::time::Instant;
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;

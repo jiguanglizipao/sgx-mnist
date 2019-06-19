@@ -57,11 +57,6 @@ impl Parameters {
     {
         return serde_json::to_string(&self).unwrap()
     }
-
-    fn from_json(s: &str)-> Self
-    {
-        return serde_json::from_str(s).unwrap()
-    }
 }
 
 fn main() {

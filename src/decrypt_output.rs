@@ -9,7 +9,6 @@ extern crate bincode;
 extern crate aes;
 extern crate block_modes;
 
-use std::time::Instant;
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
@@ -47,7 +46,7 @@ fn main() {
     let serialized_y_pred = cipher.decrypt(cipher_y_pred.as_mut_slice()).unwrap();
     let y_pred:ndarray::Array<f32, ndarray::IxDyn> = bincode::deserialize(&serialized_y_pred).unwrap();
 
-    let y_compare = ndarray::stack![ndarray::Axis(1), y_slice, y_slice];
+    let y_compare = ndarray::stack![ndarray::Axis(1), y_slice, y_pred];
     println!("{}", y_compare);
 }
 
