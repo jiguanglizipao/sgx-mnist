@@ -1,0 +1,23 @@
+language: rust
+
+env: TYPE=default RUST_BACKTRACE=1
+
+rust:
+  - "1.33.0"
+  - stable
+  - beta
+  - nightly
+
+os:
+  - linux
+  - osx
+
+sudo: false
+
+cache: cargo
+
+install:
+  - cargo build -v
+
+script:
+  - cargo test -v
